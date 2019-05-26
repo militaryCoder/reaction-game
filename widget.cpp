@@ -16,11 +16,9 @@
 void Widget::paintEvent(QPaintEvent *)
 {
     QPainter mainPainter(this);
-
-
     QPainter bufferPainter(temporaryBackground);
-    drawBufferedFrame(&bufferPainter);
 
+    drawBufferedFrame(&bufferPainter);
     mainPainter.drawImage(0, 0, *temporaryBackground);
 
     switch (currentState)
@@ -29,12 +27,6 @@ void Widget::paintEvent(QPaintEvent *)
     case MENU:
     {
         drawMainMenuUI(width()/2 - 80, height()/2, &mainPainter);
-        break;
-    }
-    case PREPARE:
-    {
-        mainPainter.drawText(width()/2 - 80, height()/2, "Prepare..." + QString::number(statePrepareTime / 1000) + "." +
-                         QString::number(statePrepareTime % 1000));
         break;
     }
     case GAME:
@@ -114,7 +106,7 @@ void Widget::mousePressEvent(QMouseEvent* mouseEvent)
 {
     if (currentState == GAME)
     {
-        if (isClickedOnCircle(mouseEvent))
+        if (isClickedInCircle(mouseEvent))
         {
             increaseScore();
             hitClicked++;
@@ -229,7 +221,7 @@ double Widget::setRandomVector()
     return vectorWeight;
 }
 
-bool Widget::isClickedOnCircle(QMouseEvent* mouseEvent)
+bool Widget::isClickedInCircle(QMouseEvent* mouseEvent)
 {
     QPoint pointClicked = mouseEvent -> pos();
 
@@ -300,6 +292,11 @@ void Widget::drawBufferedFrame(QPainter* painter)
         int topLeftY = height()/2;
 
         QImage piece = sourceBackgroundImage->copy(QRect(topLeftX - 20, topLeftY - 20, 200, 30));
+        if (statePrepareTime <= 20)
+        {
+            painter->drawImage(topLeftX - 20, topLeftY - 20, piece);
+            break;
+        }
         painter->drawImage(topLeftX - 20, topLeftY - 20, piece);
         painter->drawText(topLeftX, topLeftY, "Prepare..." + QString::number(statePrepareTime / 1000) + "." +
                           QString::number(statePrepareTime % 1000));
@@ -311,17 +308,3 @@ void Widget::drawBufferedFrame(QPainter* painter)
     }
     }
 }
-
-//QPixmap Widget::convertImageToPixmap(QImage* srcImage)
-//{
-//    QPixmap pixmap;
-
-//    QByteArray byteArray;
-//    QBuffer buffer(&byteArray);
-
-//    buffer.open(QIODevice::ReadWrite);
-//    srcImage->save(&buffer);
-//    pixmap.loadFromData(byteArray);
-
-//    return pixmap;
-//}
