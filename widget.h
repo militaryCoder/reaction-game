@@ -22,7 +22,7 @@ private:
     void bounce();
     int factor;
     double vectorX,
-          vectorY;
+           vectorY;
     double setRandomVector();
     int currentState;
     enum states { MENU, PREPARE, GAME, GAME_OVER };
@@ -31,7 +31,7 @@ private:
     int hitClicked;
     int missClicked;
     int timerInterval = 20;
-    bool isClickedOnCircle(QMouseEvent*);
+    bool isClickedInCircle(QMouseEvent*);
     void increaseScore();
     int calculateHitPercentage();
 
@@ -44,7 +44,6 @@ private:
     QImage* temporaryBackground;
 
     void drawBufferedFrame(QPainter*);
-
 
 private slots:
     void onTimerSlot();
