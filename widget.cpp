@@ -29,13 +29,13 @@ void Widget::paintEvent(QPaintEvent *)
         drawMainMenuUI(width()/2 - 80, height()/2, &mainPainter);
         break;
     }
-    case GAME:
-    {
-        mainPainter.drawEllipse(center, radius, radius);
-        mainPainter.drawText(width()/2 - 10, 20, QString::number(stateGameTime / 1000 + 1));
-        mainPainter.drawText(width()/2 - 10, height() - 20, QString::number(currentScore));
-        break;
-    }
+//    case GAME:
+//    {
+//        mainPainter.drawEllipse(center, radius, radius);
+//        mainPainter.drawText(width()/2 - 10, 20, QString::number(stateGameTime / 1000 + 1));
+//        mainPainter.drawText(width()/2 - 10, height() - 20, QString::number(currentScore));
+//        break;
+//    }
     case GAME_OVER:
     {
         mainPainter.drawText(200, 200, "Game Over");
@@ -292,6 +292,7 @@ void Widget::drawBufferedFrame(QPainter* painter)
         int topLeftY = height()/2;
 
         QImage piece = sourceBackgroundImage->copy(QRect(topLeftX - 20, topLeftY - 20, 200, 30));
+
         if (statePrepareTime <= 20)
         {
             painter->drawImage(topLeftX - 20, topLeftY - 20, piece);
@@ -305,6 +306,25 @@ void Widget::drawBufferedFrame(QPainter* painter)
     case GAME:
     {
 
+        int circleBoxLX = center.x() + ((vectorX > 0) ? -radius : radius);
+        int circleBoxLY = center.y() + ((vectorY > 0) ? -radius : radius);
+
+        QRect boundingBox(circleBoxLX, circleBoxLY, (radius*2), (radius*2));
+        QImage circleEraser = sourceBackgroundImage->copy(boundingBox);
+
+        painter->drawImage(circleBoxLX, circleBoxLY, circleEraser);
+
+        QPoint newCenter = center;
+        newCenter.setX(static_cast<int>(center.x() + vectorX*5));
+        newCenter.setY(static_cast<int>(center.y() + vectorY*5));
+
+
+        painter->drawEllipse(newCenter, radius, radius);
+
+//        QPoint newCenter = center;
+//        newCenter.setX(static_cast<int>(center.x() + vectorX*5));
+//        newCenter.setY(static_cast<int>(center.y() + vectorY*5));
+//        painter->drawEllipse(newCenter, radius, radius);
     }
     }
 }
