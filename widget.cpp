@@ -188,11 +188,9 @@ Widget::~Widget()
 
 }
 
-void Widget::setTarget()
+void Widget::setRandomTarget()
 {
-    int min = 2,
-        max = 6;
-    radius = (qrand() % (max - min) + min) * 5;
+    radius = setRandomRadius();
 
     int centerX = qrand() % (width() - 2 * radius) + radius;
     int centerY = qrand() % (height() - 2 * radius) + radius;
@@ -248,6 +246,14 @@ int Widget::calculateHitPercentage()
     double percent = attitude * 100;
 
     return static_cast<int>(percent);
+}
+
+int Widget::setRandomRadius()
+{
+    int min = 2,
+        max = 6;
+    int r = (qrand() % (max - min) + min) * 5;
+    return r;
 }
 
 void Widget::setBackgroundImage(QString fullPathToFile, QPainter* currentPainter)
@@ -320,11 +326,6 @@ void Widget::drawBufferedFrame(QPainter* painter)
 
 
         painter->drawEllipse(newCenter, radius, radius);
-
-//        QPoint newCenter = center;
-//        newCenter.setX(static_cast<int>(center.x() + vectorX*5));
-//        newCenter.setY(static_cast<int>(center.y() + vectorY*5));
-//        painter->drawEllipse(newCenter, radius, radius);
     }
     }
 }

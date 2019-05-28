@@ -18,7 +18,7 @@ private:
     QFont mainFont;
     QPoint center;
     int radius;
-    void setTarget();
+    void setRandomTarget();
     void bounce();
     int factor;
     double vectorX,
@@ -34,6 +34,8 @@ private:
     bool isClickedInCircle(QMouseEvent*);
     void increaseScore();
     int calculateHitPercentage();
+
+    int setRandomRadius();
 
     const int STATE_PREPARE_TIME = 3000;
     const int STATE_GAME_TIME = 10000;
