@@ -113,7 +113,7 @@ void Widget::mousePressEvent(QMouseEvent* mouseEvent)
 
             vectorX = setRandomVector();
             vectorY = setRandomVector();
-            setTarget();
+            setRandomTarget();
             update();
         }
         else
@@ -160,7 +160,7 @@ Widget::Widget(QWidget *parent)
 
     setFocusPolicy(Qt::StrongFocus);
 
-    setTarget();
+    setRandomTarget();
 
     QTimer* timer = new QTimer;
     connect(timer, SIGNAL(timeout()),
