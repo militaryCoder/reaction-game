@@ -7,13 +7,17 @@
 class Circle
 {
 public:
-    Circle() {}
+    Circle();
+    Circle(unsigned r) : m_radius(r) {}
 
     unsigned getRadius() const;
     void setRadius(const unsigned val);
 
     auto getBoundRect() const -> QRect;
     void setBoundRect(const QRect &R);
+
+    auto getCenter() const -> const QPoint&;
+    void setCenter(const QPoint &p);
 
     auto center() -> QPoint&;
     auto radius() -> unsigned&;
