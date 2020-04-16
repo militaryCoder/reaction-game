@@ -30,6 +30,8 @@ private:
     void setCircleVelocity(int velocityX, int velocityY);
     void setCircleRadius(unsigned r);
 
+    QImage *m_visualBuffer;
+
     int m_shrinkFlattenFactor;
     int m_directionX;
     int m_directionY;

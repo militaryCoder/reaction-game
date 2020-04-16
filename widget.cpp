@@ -32,6 +32,9 @@ Widget::Widget(QWidget *parent)
 {
     std::srand(std::time(nullptr));
 
+    m_visualBuffer = new QImage(width(), height(), QImage::Format_RGB32);
+    m_visualBuffer->fill(0xFFB6A6);
+
     statePrepareTime = STATE_PREPARE_TIME;
     stateGameTime = STATE_GAME_TIME;
     currentScore = 0;
@@ -71,17 +74,21 @@ Widget::Widget(QWidget *parent)
 void Widget::paintEvent(QPaintEvent *)
 {
     QPainter mainPainter(this);
-    QPainter bufferPainter;
-
-    // TODO: Rewrite double-buffered image draw logic
-    //drawBufferedFrame(&bufferPainter);
+    QPainter bufferPainter(m_visualBuffer);
 
     switch (currentState)
     {
 
     case GAME:
     {
-        mainPainter.drawEllipse(m_circle.center(), m_circle.getRadius(), m_circle.getRadius());
+        int radius = static_cast<int>(m_circle.getRadius());
+        unsigned bgColor = 0xFFB6A6;
+        bufferPainter.drawEllipse(m_circle.center(), radius, radius);
+        mainPainter.drawImage(this->rect(), *m_visualBuffer, m_visualBuffer->rect());
+        bufferPainter.setPen(QColor(QRgb(bgColor)));
+        QRect eraser(m_circle.center().x() - radius, m_circle.center().y() - radius,
+                     radius*2 + 1, radius*2 + 1);
+        bufferPainter.fillRect(m_circle.constructBoundingBox(), QBrush(QColor(QRgb(bgColor))));
     } break;
 
     case MENU:
