@@ -15,15 +15,23 @@
 
 // TODO: Should refactor it from here.
 template <typename T>
-T getRandomNumber(T min, T max) {
+T getRandomNumber(T min, T max)
+{
     static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
     return static_cast<T>(rand() * fraction * (max - min + 1) + min);
 }
 
+template <typename T>
+bool inRange(T val, T low, T high)
+{
+    return val >= low && val <= high;
+}
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
+    std::srand(std::time(nullptr));
+
     statePrepareTime = STATE_PREPARE_TIME;
     stateGameTime = STATE_GAME_TIME;
     currentScore = 0;
@@ -34,8 +42,18 @@ Widget::Widget(QWidget *parent)
 
     setFocusPolicy(Qt::StrongFocus);
 
-    // setRandomTarget();
+    setCircleRadius(getRandomNumber(Circle::MIN_RADIUS, Circle::MAX_RADIUS));
+    unsigned centerX = getRandomNumber(m_circle.getRadius(), static_cast<unsigned>(width()) - m_circle.getRadius());
+    unsigned centerY = getRandomNumber(m_circle.getRadius(), static_cast<unsigned>(height()) - m_circle.getRadius());
+    setCirclePosition(static_cast<int>(centerX), static_cast<int>(centerY));
+    setCircleVelocity(getRandomNumber(Widget::MIN_VELOCITY, Widget::MAX_VELOCITY),
+                      getRandomNumber(Widget::MIN_VELOCITY, Widget::MAX_VELOCITY));
+    setCircleFlowDirection(generateRandomDirection(), generateRandomDirection());
 
+    m_shrinkFlattenFactor = 1;
+
+    m_canDirectionXBeChanged = true;
+    m_canDirectionYBeChanged = true;
 
 
     QTimer *timer = new QTimer;
@@ -43,10 +61,6 @@ Widget::Widget(QWidget *parent)
             this, SLOT(onTimerSlot()));
     timer->setInterval(static_cast<int>(timerInterval));
     timer->start();
-    m_shrinkFlattenFactor = 1;
-    m_circleVelocityX = getRandomNumber(Widget::MIN_VELOCITY, Widget::MAX_VELOCITY);
-    m_circleVelocityY = getRandomNumber(Widget::MIN_VELOCITY, Widget::MAX_VELOCITY);
-
 
     mainFont.setFamily("monaco");
     mainFont.setPixelSize(20);
@@ -105,16 +119,46 @@ void Widget::onTimerSlot()
             statePrepareTime = STATE_PREPARE_TIME;
         }
     } break;
+
     case GAME:
     {
         m_circle.radius() += m_shrinkFlattenFactor * 2;
-        if (m_circle.getRadius() >= Circle::MAX_RADIUS || m_circle.getRadius() < Circle::MIN_RADIUS)
+        int radius = static_cast<int>(m_circle.getRadius());
+
+        if (radius >= static_cast<int>(Circle::MAX_RADIUS) || radius < static_cast<int>(Circle::MIN_RADIUS))
         {
             m_shrinkFlattenFactor *= -1;
         }
 
-        m_circle.center().setX(static_cast<int>(m_circle.center().x() + m_circleVelocityX));
-        m_circle.center().setY(static_cast<int>(m_circle.center().y() + m_circleVelocityY));
+        if (m_circle.center().x() > radius
+                && m_circle.center().x() < width() - radius)
+        {
+            m_canDirectionXBeChanged = true;
+        }
+
+        if (m_circle.center().y() > radius
+                && m_circle.center().y() < height() - radius)
+        {
+            m_canDirectionYBeChanged = true;
+        }
+
+        if ((m_circle.center().x() >= width() - radius
+                || m_circle.center().x() <= radius)
+                && m_canDirectionXBeChanged)
+        {
+            setCircleFlowDirection(-m_directionX, m_directionY);
+            m_canDirectionXBeChanged = false;
+        }
+        if ((m_circle.center().y() >= height() - radius
+                || m_circle.center().y() <= radius)
+                && m_canDirectionYBeChanged)
+        {
+            setCircleFlowDirection(m_directionX, -m_directionY);
+            m_canDirectionYBeChanged = false;
+        }
+
+        m_circle.center().setX(static_cast<int>(m_circle.center().x() + m_circleVelocityX*m_directionX));
+        m_circle.center().setY(static_cast<int>(m_circle.center().y() + m_circleVelocityY*m_directionY));
 
         stateGameTime -= timerInterval;
         if (stateGameTime <= 0)
@@ -141,9 +185,6 @@ void Widget::mousePressEvent(QMouseEvent* mouseEvent)
             increaseScore();
             hitClicked++;
 
-//            vectorX = setRandomVector();
-//            vectorY = setRandomVector();
-            setRandomTarget();
             update();
         }
         else
@@ -177,15 +218,6 @@ void Widget::keyPressEvent(QKeyEvent* keyEvent)
 
 Widget::~Widget() {}
 
-void Widget::setRandomTargetPosition()
-{
-    std::srand(static_cast<unsigned>(std::time(nullptr)));
-    unsigned centerX = getRandomNumber(m_circle.getRadius(), static_cast<unsigned>(width()) - m_circle.getRadius());
-    unsigned centerY = getRandomNumber(m_circle.getRadius(), static_cast<unsigned>(height()) - m_circle.getRadius());
-    m_circle.center().setX(static_cast<int>(centerX));
-    m_circle.center().setY(static_cast<int>(centerY));
-}
-
 int Widget::generateRandomDirection() { return getRandomNumber(0, 1) == 0 ? -1 : 1; }
 
 void Widget::setCircleFlowDirection(int directionX, int directionY)
@@ -198,6 +230,17 @@ void Widget::setCircleVelocity(int velocityX, int velocityY)
 {
     m_circleVelocityX = velocityX;
     m_circleVelocityY = velocityY;
+}
+
+void Widget::setCirclePosition(int x, int y)
+{
+    m_circle.center().setX(x);
+    m_circle.center().setY(y);
+}
+
+void Widget::setCircleRadius(unsigned int r)
+{
+    m_circle.radius() = r;
 }
 
 bool Widget::isClickedInCircle(QMouseEvent* mouseEvent)

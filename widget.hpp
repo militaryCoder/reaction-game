@@ -21,19 +21,20 @@ private:
     QFont mainFont;
     Circle m_circle;
 
-    void setTargetPosition(int x, int y);
-    void setRandomTarget();
-    void setRandomTargetPosition();
+    void setCirclePosition(int x, int y);
 
     int m_circleVelocityX;
     int m_circleVelocityY;
     static const int MIN_VELOCITY = 5;
     static const int MAX_VELOCITY = 15;
     void setCircleVelocity(int velocityX, int velocityY);
+    void setCircleRadius(unsigned r);
 
     int m_shrinkFlattenFactor;
     int m_directionX;
     int m_directionY;
+    bool m_canDirectionXBeChanged;
+    bool m_canDirectionYBeChanged;
     int generateRandomDirection();
     void setCircleFlowDirection(int directionX, int directionY);
 
