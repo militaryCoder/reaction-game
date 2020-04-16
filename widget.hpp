@@ -1,7 +1,8 @@
-#ifndef WIDGET_H
-#define WIDGET_H
+#pragma once
 
 #include <QWidget>
+
+#include "Circle.hpp"
 
 class Widget : public QWidget
 {
@@ -15,40 +16,44 @@ public:
     ~Widget();
 
 private:
-    QFont mainFont;
-    QPoint center;
-    int radius;
-    void setRandomTarget();
-    void bounce();
-    int factor;
-    double vectorX,
-           vectorY;
-    double setRandomVector();
-    int currentState;
     enum states { MENU, PREPARE, GAME, GAME_OVER };
+
+    QFont mainFont;
+    Circle m_circle;
+
+    void setTargetPosition(int x, int y);
+    void setRandomTarget();
+    void setRandomTargetPosition();
+
+    int m_circleVelocityX;
+    int m_circleVelocityY;
+    static const int MIN_VELOCITY = 5;
+    static const int MAX_VELOCITY = 15;
+    void setCircleVelocity(int velocityX, int velocityY);
+
+    int m_shrinkFlattenFactor;
+    int m_directionX;
+    int m_directionY;
+    int generateRandomDirection();
+    void setCircleFlowDirection(int directionX, int directionY);
+
+    int currentState;
     int statePrepareTime, stateGameTime;
     int currentScore, bestScore;
     int hitClicked;
     int missClicked;
-    int timerInterval = 20;
+    const unsigned timerInterval = 20;
     bool isClickedInCircle(QMouseEvent*);
     void increaseScore();
     int calculateHitPercentage();
 
-    int setRandomRadius();
-
     const int STATE_PREPARE_TIME = 3000;
     const int STATE_GAME_TIME = 10000;
 
-    void setBackgroundImage(QString, QPainter*);
     void drawMainMenuUI(int, int, QPainter*);
-    QImage* sourceBackgroundImage;
-    QImage* temporaryBackground;
 
     void drawBufferedFrame(QPainter*);
 
 private slots:
     void onTimerSlot();
 };
-
-#endif // WIDGET_H

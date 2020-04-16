@@ -25,11 +25,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++17
 
 SOURCES += \
+        Circle.cpp \
         main.cpp \
         widget.cpp
 
 HEADERS += \
-        widget.h
+    Circle.hpp \
+    widget.hpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
