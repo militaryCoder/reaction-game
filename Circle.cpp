@@ -7,6 +7,12 @@ Circle::Circle()
     m_radius = Circle::MIN_RADIUS;
 }
 
+Circle::Circle(const QPoint &center, unsigned r)
+{
+    m_center = center;
+    m_radius = r;
+}
+
 auto Circle::getCenter() const -> const QPoint&
 {
     return m_center;
@@ -15,12 +21,6 @@ auto Circle::getCenter() const -> const QPoint&
 void Circle::setCenter(const QPoint &p)
 {
     m_center = p;
-
-    int halfRadius = m_radius / 2;
-    m_bounds.setLeft(m_center.x() - halfRadius);
-    m_bounds.setTop(m_center.y() - halfRadius);
-    m_bounds.setRight(m_center.x() + halfRadius);
-    m_bounds.setBottom(m_center.y() + halfRadius);
 }
 
 auto Circle::center() -> QPoint&
@@ -41,17 +41,15 @@ unsigned Circle::getRadius() const
 void Circle::setRadius(const unsigned val)
 {
     m_radius = static_cast<unsigned>(std::abs(static_cast<float>(val)));
-
-    m_bounds.setWidth(static_cast<int>(m_radius) * 2);
-    m_bounds.setHeight(static_cast<int>(m_radius) * 2);
 }
 
-auto Circle::getBoundRect() const -> QRect
+const QRect Circle::constructBoundingBox()
 {
-    return m_bounds;
-}
+    QRect boundBox;
+    boundBox.setX(m_center.x() - m_radius);
+    boundBox.setY(m_center.y() - m_radius);
+    boundBox.setWidth(m_radius * 2 + 1);
+    boundBox.setHeight(m_radius * 2 + 1);
 
-void Circle::setBoundRect(const QRect &R)
-{
-    m_bounds = R;
+    return boundBox;
 }
