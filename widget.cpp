@@ -13,20 +13,6 @@
 #include <cstdlib>
 #include <ctime>
 
-// TODO: Should refactor it from here.
-template <typename T>
-T getRandomNumber(T min, T max)
-{
-    static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
-    return static_cast<T>(rand() * fraction * (max - min + 1) + min);
-}
-
-template <typename T>
-bool inRange(T val, T low, T high)
-{
-    return val >= low && val <= high;
-}
-
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
@@ -86,6 +72,7 @@ void Widget::paintEvent(QPaintEvent *)
         bufferPainter.drawEllipse(m_circle.center(), radius, radius);
         mainPainter.drawImage(this->rect(), *m_visualBuffer, m_visualBuffer->rect());
         bufferPainter.setPen(QColor(QRgb(bgColor)));
+
         QRect eraser(m_circle.center().x() - radius, m_circle.center().y() - radius,
                      radius*2 + 1, radius*2 + 1);
         bufferPainter.fillRect(m_circle.constructBoundingBox(), QBrush(QColor(QRgb(bgColor))));
@@ -295,43 +282,3 @@ void Widget::drawMainMenuUI(int x, int y, QPainter* menuPainter)
 
     menuPainter->drawText(x, y, "Best score " + QString::number(bestScore));
 }
-
-//void Widget::drawBufferedFrame(QPainter* painter)
-//{
-//    switch (currentState)
-//    {
-//    case PREPARE:
-//    {
-//        int topLeftX = width()/2 - 80;
-//        int topLeftY = height()/2;
-
-//        if (statePrepareTime <= 20)
-//        {
-//            painter->drawImage(topLeftX - 20, topLeftY - 20, piece);
-//            break;
-//        }
-//        painter->drawImage(topLeftX - 20, topLeftY - 20, piece);
-//        painter->drawText(topLeftX, topLeftY, "Prepare..." + QString::number(statePrepareTime / 1000) + "." +
-//                          QString::number(statePrepareTime % 1000));
-//        break;
-//    }
-//    case GAME:
-//    {
-
-//        int circleBoxLX = center.x() + ((vectorX > 0) ? -radius : radius);
-//        int circleBoxLY = center.y() + ((vectorY > 0) ? -radius : radius);
-
-//        QRect boundingBox(circleBoxLX, circleBoxLY, (radius*2), (radius*2));
-//        QImage circleEraser = sourceBackgroundImage->copy(boundingBox);
-
-//        painter->drawImage(circleBoxLX, circleBoxLY, circleEraser);
-
-//        QPoint newCenter = center;
-//        newCenter.setX(static_cast<int>(center.x() + vectorX*5));
-//        newCenter.setY(static_cast<int>(center.y() + vectorY*5));
-
-
-//        painter->drawEllipse(newCenter, radius, radius);
-//    }
-//    }
-//}
