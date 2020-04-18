@@ -30,7 +30,9 @@ SOURCES += \
         widget.cpp
 
 HEADERS += \
+    Button.hpp \
     Circle.hpp \
+    utils.hpp \
     widget.hpp
 
 # Default rules for deployment.
