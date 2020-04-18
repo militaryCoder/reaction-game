@@ -22,13 +22,13 @@ Widget::Widget(QWidget *parent)
     m_visualBuffer = new QImage(width(), height(), QImage::Format_RGB32);
     m_visualBuffer->fill(0xFFB6A6);
 
-    statePrepareTime = STATE_PREPARE_TIME;
-    stateGameTime = STATE_GAME_TIME;
-    currentScore = 0;
-    bestScore = 0;
-    hitClicked = 0;
-    missClicked = 0;
-    currentState = MENU;
+    m_statePrepareTime = STATE_PREPARE_TIME;
+    m_stateGameTime = STATE_GAME_TIME;
+    m_currentScore = 0;
+    m_bestScore = 0;
+    m_hitClicked = 0;
+    m_missClicked = 0;
+    m_currentState = MENU;
 
     setFocusPolicy(Qt::StrongFocus);
 
@@ -63,7 +63,7 @@ void Widget::paintEvent(QPaintEvent *)
     QPainter mainPainter(this);
     QPainter bufferPainter(m_visualBuffer);
 
-    switch (currentState)
+    switch (m_currentState)
     {
 
     case GAME:
@@ -87,12 +87,12 @@ void Widget::paintEvent(QPaintEvent *)
     case GAME_OVER:
     {
         mainPainter.drawText(200, 200, "Game Over");
-        mainPainter.drawText(200, 220, "Score " + QString::number(currentScore));
-        mainPainter.drawText(200, 240, "Hit circles: " + QString::number(hitClicked));
-        mainPainter.drawText(200, 260, "Missed clickes: " + QString::number(missClicked));
+        mainPainter.drawText(200, 220, "Score " + QString::number(m_currentScore));
+        mainPainter.drawText(200, 240, "Hit circles: " + QString::number(m_hitClicked));
+        mainPainter.drawText(200, 260, "Missed clickes: " + QString::number(m_missClicked));
         mainPainter.drawText(200, 280, "Hit percentage: " + QString::number(calculateHitPercentage()) + " %");
 
-        mainPainter.drawText(200, 320, "Best Score " + QString::number(bestScore));
+        mainPainter.drawText(200, 320, "Best Score " + QString::number(m_bestScore));
         mainPainter.drawText(200, 340, "1. Return to main menu");
         mainPainter.drawText(200, 360, "2. Exit");
         break;
@@ -103,15 +103,15 @@ void Widget::paintEvent(QPaintEvent *)
 
 void Widget::onTimerSlot()
 {
-    switch (currentState)
+    switch (m_currentState)
     {
     case PREPARE:
     {
-        statePrepareTime -= timerInterval;
-        if (statePrepareTime <= 0)
+        m_statePrepareTime -= timerInterval;
+        if (m_statePrepareTime <= 0)
         {
-            currentState = GAME;
-            statePrepareTime = STATE_PREPARE_TIME;
+            m_currentState = GAME;
+            m_statePrepareTime = STATE_PREPARE_TIME;
         }
     } break;
 
@@ -155,16 +155,16 @@ void Widget::onTimerSlot()
         m_circle.center().setX(static_cast<int>(m_circle.center().x() + m_circleVelocityX*m_directionX));
         m_circle.center().setY(static_cast<int>(m_circle.center().y() + m_circleVelocityY*m_directionY));
 
-        stateGameTime -= timerInterval;
-        if (stateGameTime <= 0)
+        m_stateGameTime -= timerInterval;
+        if (m_stateGameTime <= 0)
         {
-            currentState = GAME_OVER;
-            stateGameTime = STATE_GAME_TIME;
+            m_currentState = GAME_OVER;
+            m_stateGameTime = STATE_GAME_TIME;
         }
     } break;
     case GAME_OVER:
     {
-        bestScore = (currentScore > bestScore) ? currentScore : bestScore;
+        m_bestScore = (m_currentScore > m_bestScore) ? m_currentScore : m_bestScore;
     } break;
     }
 
@@ -173,37 +173,42 @@ void Widget::onTimerSlot()
 
 void Widget::mousePressEvent(QMouseEvent* mouseEvent)
 {
-    if (currentState == GAME)
+    if (m_currentState == GAME)
     {
         if (isClickedInCircle(mouseEvent))
         {
             increaseScore();
-            hitClicked++;
+            m_hitClicked++;
 
             update();
         }
         else
-            missClicked++;
+            m_missClicked++;
     }
+}
 
+void Widget::mouseMoveEvent(QMouseEvent *event)
+{
+    QPoint mousePos = event->pos();
+    
 }
 
 void Widget::keyPressEvent(QKeyEvent* keyEvent)
 {
-    switch (currentState)
+    switch (m_currentState)
     {
 
     case MENU:
     {
         if (keyEvent -> key() == Qt::Key_1)
-            currentState = PREPARE;
+            m_currentState = PREPARE;
         if (keyEvent -> key() == Qt::Key_2)
             qApp -> quit();
     } break;
     case GAME_OVER:
     {
         if (keyEvent->key() == Qt::Key_1)
-            currentState = MENU;
+            m_currentState = MENU;
         if (keyEvent -> key() == Qt::Key_2)
             qApp -> quit();
     } break;
@@ -257,13 +262,13 @@ bool Widget::isClickedInCircle(QMouseEvent* mouseEvent)
 
 void Widget::increaseScore()
 {
-    currentScore += (60 - m_circle.getRadius());
+    m_currentScore += (60 - m_circle.getRadius());
 }
 
 int Widget::calculateHitPercentage()
 {
-    unsigned allClicks = static_cast<unsigned>(missClicked + hitClicked);
-    double attitude = static_cast<double>(hitClicked) / static_cast<double>(allClicks);
+    unsigned allClicks = static_cast<unsigned>(m_missClicked + m_hitClicked);
+    double attitude = static_cast<double>(m_hitClicked) / static_cast<double>(allClicks);
     double percent = attitude * 100;
 
     return static_cast<int>(percent);
@@ -281,5 +286,5 @@ void Widget::drawMainMenuUI(int x, int y, QPainter* menuPainter)
     menuPainter->drawText(x, y, "2. Quit game");
     y += shift * 2;
 
-    menuPainter->drawText(x, y, "Best score " + QString::number(bestScore));
+    menuPainter->drawText(x, y, "Best score " + QString::number(m_bestScore));
 }

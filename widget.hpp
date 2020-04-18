@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "Circle.hpp"
+
+#include <QWidget>
 
 class Widget : public QWidget
 {
@@ -10,6 +10,7 @@ class Widget : public QWidget
 protected:
     void paintEvent(QPaintEvent*);
     void mousePressEvent(QMouseEvent*);
+    void mouseMoveEvent(QMouseEvent*);
     void keyPressEvent(QKeyEvent*);
 public:
     Widget(QWidget *parent = nullptr);
@@ -40,11 +41,11 @@ private:
     int generateRandomDirection();
     void setCircleFlowDirection(int directionX, int directionY);
 
-    int currentState;
-    int statePrepareTime, stateGameTime;
-    int currentScore, bestScore;
-    int hitClicked;
-    int missClicked;
+    int m_currentState;
+    int m_statePrepareTime, m_stateGameTime;
+    int m_currentScore, m_bestScore;
+    int m_hitClicked;
+    int m_missClicked;
     const unsigned timerInterval = 20;
     bool isClickedInCircle(QMouseEvent*);
     void increaseScore();
@@ -54,8 +55,6 @@ private:
     const int STATE_GAME_TIME = 10000;
 
     void drawMainMenuUI(int, int, QPainter*);
-
-    void drawBufferedFrame(QPainter*);
 
 private slots:
     void onTimerSlot();
