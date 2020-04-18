@@ -1,2 +1,6 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/"/>
+    <qresource prefix="/images">
+        <file>StartButton_SpriteSheet.png</file>
+    </qresource>
+</RCC>
