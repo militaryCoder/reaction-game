@@ -4,20 +4,36 @@
 
 class Button
 {
-    QImage m_stateSprites;
+    QPoint m_topLeft;
+    QImage m_spriteSheet;
+    QImage m_currentSprite;
+    QRect m_rect;
     int m_currentState;
 
+    int m_spriteWidth;
+    int m_spriteHeight;
+
 public:
-    Button(int x, int y);
-    Button(const QPoint &p);
+    Button() = default;
+
     void setSprite();
-    void changeState(int newState);
+    void updateSprite();
+    void setSpriteSheet(const QImage &spriteSheet);
+    void setState(int newState);
+
+    void draw(int x, int y, QPainter *painter);
+
+    int getState() const;
+
+    QRect getRect() const;
+    QRect &rect();
+
+    QImage getCurrentSprite() const;
+
     enum class State
     {
         IDLE,
         HOVERED,
         CLICKED
     };
-
-
 };
