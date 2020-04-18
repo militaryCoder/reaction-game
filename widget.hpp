@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Button.hpp"
 #include "Circle.hpp"
 
 #include <QWidget>
@@ -21,6 +22,8 @@ private:
 
     QFont mainFont;
     Circle m_circle;
+
+    Button m_startButton;
 
     void setCirclePosition(int x, int y);
 
